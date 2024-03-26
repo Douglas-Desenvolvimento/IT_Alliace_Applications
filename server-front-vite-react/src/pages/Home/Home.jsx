@@ -23,7 +23,7 @@ const Home = () => {
   const { userLocal } = useAuthentication(); // Pegue a role do usuário do hook useAuthentication
   console.log("na Home: ", userLocal);
 
-  const uu = "admin";
+  const uu = "tech";
 
   useEffect(() => {
     // Atualiza o estado de activeKey com base no valor de uu
