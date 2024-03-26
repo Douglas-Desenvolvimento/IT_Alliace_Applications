@@ -1,0 +1,45 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const useAuthentication = () => {
+  const [error, setError] = useState('');
+  const [roleUser, setRoleUser] = useState('');
+  const navigate = useNavigate();
+
+  const login = async (username, password) => {
+    try {
+      setError('');
+
+      const response = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao fazer login.');
+      }
+
+      const { token } = await response.json(); // Obtenha o token JWT da resposta
+
+      // Armazene o token JWT localmente (por exemplo, em localStorage)
+      localStorage.setItem('token', token);
+      console.log('Token JWT:', token);
+
+      // Redireciona para a página desejada após o login
+      navigate('/home');
+      
+      // Retorna true se o usuário for autenticado com sucesso
+      return { success: true };
+    } catch (error) {
+      setError(error.message);
+      return { success: false, error: error.message };
+    }
+  };
+
+  return { login, roleUser };
+};
+
+export default useAuthentication;

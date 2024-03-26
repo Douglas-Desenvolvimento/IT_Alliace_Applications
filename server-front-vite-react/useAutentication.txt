@@ -1,0 +1,42 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const useAuthentication = () => {
+  const [error, setError] = useState('');
+  const [roleUser, setRoleUser] = useState(''); // Adiciona o estado para armazenar a role do usuário
+  const navigate = useNavigate();
+
+  const login = async (username, password, role, empresa) => {
+    try {
+      setError(''); // Limpa o erro anterior antes de tentar fazer login
+
+      const response = await fetch('http://localhost:3000/user');
+      if (!response.ok) {
+        throw new Error('Falha ao obter os usuários.');
+      }
+
+      const userData = await response.json();
+
+      const foundUser = userData.find(user => user.username === username && user.password === password);
+
+      if (foundUser) {
+        // Redireciona para a página desejada após o login
+        const roleUser = foundUser.role;
+        const empresaUser = foundUser.empresa;
+
+        setRoleUser(roleUser); // Define a role do usuário no estado
+        navigate('/home');
+        return { success: true, roleUser, empresaUser }; // Retorna true se o usuário for autenticado com sucesso, junto com as informações de role e empresa
+      } else {
+        throw new Error('Nome de usuário ou senha inválidos.');
+      }
+    } catch (error) {
+      setError(error.message); // Define o erro no estado para exibição na interface
+      return { success: false, error: error.message }; // Retorna false em caso de falha na autenticação, junto com a mensagem de erro
+    }
+  };
+
+  return { login, roleUser }; // Retorna também a role do usuário
+};
+
+export default useAuthentication;

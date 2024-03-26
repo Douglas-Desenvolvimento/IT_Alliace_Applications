@@ -1,0 +1,21 @@
+/* styles.css */
+.admin-col {
+    background-color: #ff0000; /* Cor de fundo para colunas de admin */
+    color: #ffffff; /* Cor do texto para colunas de admin */
+  }
+  
+  .user-col {
+    background-color: #00ff00; /* Cor de fundo para colunas de usuário */
+    color: #000000; /* Cor do texto para colunas de usuário */
+  }
+  
+  .tech-col {
+    background-color: #0000ff; /* Cor de fundo para colunas de técnico */
+    color: #ffffff; /* Cor do texto para colunas de técnico */
+  }
+  
+  .width-800 {
+    width: 800px; /* Largura de 800px */
+   
+  }
+  
