@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const jwt = require('jsonwebtoken');
+const auth = require('./auth');
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
@@ -12,12 +14,37 @@ app.use(cors({
 const { generateToken } = require('./auth');
 const { router: userRouter } = require('./userRoute');
 const { user: users } = require('./userRoute');
+const tokenRoute = require('./tokenRoute');
+const renewTokenRoute = require('./renewTokenRoute');
 
 app.use('/user', userRouter);
+app.use('/api/renew-token', renewTokenRoute);
+app.use('/api/token', tokenRoute);
 
+// Rota para renovar o token
+/* app.post('/api/renew-token', (req, res) => {
+  const { token } = req.body;
 
+  if (!token) {
+    return res.status(400).json({ error: 'Token não fornecido' });
+  }
 
+  try {
+    // Verifique se o token é válido usando a chave secreta importada
+    const decoded = jwt.verify(token, auth.secretKey);
 
+    // Se o token for válido, gere um novo token
+    const newToken = jwt.sign({ userId: decoded.userId }, auth.secretKey, { expiresIn: '1h' });
+
+    // Retorne o novo token na resposta
+    res.json({ token: newToken });
+  } catch (error) {
+    console.error('Erro ao renovar o token:', error.message);
+    res.status(401).json({ error: 'Token inválido' });
+  }
+});
+
+// Rota para login
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
   
@@ -40,7 +67,7 @@ app.post('/api/login', (req, res) => {
       // Se as credenciais estiverem incorretas, retorna um erro de autenticação
       res.status(401).json({ error: 'Credenciais inválidas.' });
     }
-});
+}); */
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);

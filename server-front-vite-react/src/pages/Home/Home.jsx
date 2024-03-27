@@ -1,7 +1,8 @@
 // Home.jsx
 import React from "react";
 import { useState, useEffect } from "react";
-import useAuthentication from "../../hooks/useAuthentication";
+import { checkSessionExpiration } from "../../hooks/sessionToken";
+//import {useAuthentication } from "../../hooks/useAuthentication";
 import "../../../node_modules/@coreui/coreui/";
 import { CContainer, CHeader } from "@coreui/react";
 import { CRow } from "@coreui/react";
@@ -12,36 +13,23 @@ import { CNav, CNavItem, CNavLink } from "@coreui/react";
 import { CTabContent, CTabPane } from "@coreui/react";
 import { CChart } from '@coreui/react-chartjs';
 import { getStyle } from '@coreui/utils';
-import {
-  isTokenExpired,
-  renewToken,
-  validateSession,
-} from "../../hooks/authService";
+import { CAlert } from "@coreui/react";
+import CIcon from "@coreui/icons-react";
+import { cilBurn } from "@coreui/icons";
 
 const Home = () => {
   const [activeKey, setActiveKey] = useState(""); // Define a aba ativa com base na role do usuário
-  const { userLocal } = useAuthentication(); // Pegue a role do usuário do hook useAuthentication
-  console.log("na Home: ", userLocal);
+  const [showSessionExpiredAlert, setShowSessionExpiredAlert] = useState(false);
 
   const uu = "tech";
 
+  //função para checar a expiração do token
   useEffect(() => {
-    // Atualiza o estado de activeKey com base no valor de uu
-    switch (uu) {
-      case "admin":
-        setActiveKey(1, 3);
-        break;
-      case "tech":
-        setActiveKey(2);
-        break;
-      case "user":
-        setActiveKey(3);
-        break;
-      default:
-        setActiveKey("");
-    }
-  }, [uu]);
+    checkSessionExpiration(setShowSessionExpiredAlert);
+  }, []);
 
+
+  
   // Função para renderizar as colunas com base na role do usuário
 
   const renderCnavItems = () => {
@@ -125,7 +113,18 @@ const Home = () => {
     }
   };
   return (
+
+   
+    
     <>
+      {/* alerta informando que a sessão expirou */}
+      {showSessionExpiredAlert && (
+      <CAlert color="danger" className="d-flex align-items-center" >
+        <CIcon icon={cilBurn} className="flex-shrink-0 me-2" width={24} height={24} />
+        <div>An example danger alert with an icon</div>  
+      </CAlert>
+      )}
+
       <NavBar />
       <br></br>
 

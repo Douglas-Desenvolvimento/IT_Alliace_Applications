@@ -10,7 +10,7 @@ const useAuthentication = () => {
       setError('');
 
       // Requisição para fazer o login
-      const loginResponse = await fetch('http://localhost:3000/api/login', {
+      const loginResponse = await fetch('http://localhost:3000/api/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -22,11 +22,12 @@ const useAuthentication = () => {
         throw new Error('Falha ao fazer login.');
       }
 
-      const { token } = await loginResponse.json(); // Obtenha o token JWT da resposta
-
+      const { token, expirationTime } = await loginResponse.json(); // Obtenha o token JWT da resposta
+      //const {expirationTime} = await loginResponse.json();
       // Armazene o token JWT localmente
       localStorage.setItem('token', token);
-      console.log('Token JWT:', token);
+      localStorage.setItem('expirationTime', expirationTime);
+      console.log('Token JWT:', token, 'Tempo de expiração:', expirationTime);
 
       // Requisição para obter os dados do usuário autenticado
       const userResponse = await fetch('http://localhost:3000/user', {
@@ -59,5 +60,6 @@ const useAuthentication = () => {
 
   return { login };
 };
+
 
 export default useAuthentication;
