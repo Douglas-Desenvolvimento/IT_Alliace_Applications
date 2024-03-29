@@ -1,10 +1,10 @@
 // Home.jsx
 import React from "react";
 import { useState, useEffect } from "react";
-import { checkSessionExpiration } from "../../hooks/sessionToken";
+import { checkSessionExpiration, setupSessionExpirationCheck } from "../../hooks/sessionToken";
 //import {useAuthentication } from "../../hooks/useAuthentication";
 import "../../../node_modules/@coreui/coreui/";
-import { CContainer, CHeader } from "@coreui/react";
+import { CContainer, CButton, CHeader } from "@coreui/react";
 import { CRow } from "@coreui/react";
 import { CCol } from "@coreui/react";
 import "./rolesUsers.css"; // Importa o arquivo CSS de estilos
@@ -15,23 +15,20 @@ import { CChart } from '@coreui/react-chartjs';
 import { getStyle } from '@coreui/utils';
 import { CAlert } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilBurn } from "@coreui/icons";
+import { cilBan,cilAccountLogout } from "@coreui/icons";
+
 
 const Home = () => {
   const [activeKey, setActiveKey] = useState(""); // Define a aba ativa com base na role do usuário
   const [showSessionExpiredAlert, setShowSessionExpiredAlert] = useState(false);
-
-  const uu = "tech";
-
-  //função para checar a expiração do token
+ 
   useEffect(() => {
+    setupSessionExpirationCheck(setShowSessionExpiredAlert);
     checkSessionExpiration(setShowSessionExpiredAlert);
   }, []);
-
-
   
   // Função para renderizar as colunas com base na role do usuário
-
+  const uu = "tech";
   const renderCnavItems = () => {
     switch (uu) {
       case "admin":
@@ -114,14 +111,16 @@ const Home = () => {
   };
   return (
 
-   
-    
     <>
       {/* alerta informando que a sessão expirou */}
       {showSessionExpiredAlert && (
       <CAlert color="danger" className="d-flex align-items-center" >
-        <CIcon icon={cilBurn} className="flex-shrink-0 me-2" width={24} height={24} />
-        <div>An example danger alert with an icon</div>  
+        <CIcon color="black" icon={cilBan} className="flex-shrink-0 me-2" width={24} height={24} />
+        <div>Sessão expirada</div>
+        <CButton
+          color="link" onClick={() => setModalVisible(!modalVisible)}>
+            <CIcon icon={cilAccountLogout} title="Logout" />
+          </CButton>  
       </CAlert>
       )}
 
