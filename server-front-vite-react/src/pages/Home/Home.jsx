@@ -1,36 +1,91 @@
 // Home.jsx
-import React from "react";
-import { useState, useEffect } from "react";
-import { checkSessionExpiration, setupSessionExpirationCheck } from "../../hooks/sessionToken";
-//import {useAuthentication } from "../../hooks/useAuthentication";
+import React, { useState, useEffect } from "react";
+import { useSession } from "../../hooks/sessionToken";
 import "../../../node_modules/@coreui/coreui/";
-import { CContainer, CButton, CHeader } from "@coreui/react";
-import { CRow } from "@coreui/react";
-import { CCol } from "@coreui/react";
-import "./rolesUsers.css"; // Importa o arquivo CSS de estilos
-import NavBar from "../../components/navBar";
+import { CContainer } from "@coreui/react";
 import { CNav, CNavItem, CNavLink } from "@coreui/react";
 import { CTabContent, CTabPane } from "@coreui/react";
-import { CChart } from '@coreui/react-chartjs';
-import { getStyle } from '@coreui/utils';
 import { CAlert } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilBan,cilAccountLogout } from "@coreui/icons";
-
+import { cilBan, cilAccountLogout } from "@coreui/icons";
+import NavBar from "../../components/navBar";
+import useAuthentication from "../../hooks/useAuthentication.jsx";
+import apiAccess from "../../hooks/apiAcess.jsx";
+import WidgetCoreui from "../../components/widgetCoreui.jsx";
 
 const Home = () => {
-  const [activeKey, setActiveKey] = useState(""); // Define a aba ativa com base na role do usuário
-  const [showSessionExpiredAlert, setShowSessionExpiredAlert] = useState(false);
- 
+  const [activeKey, setActiveKey] = useState();
+  const { showSessionExpiredAlert } = useSession();
+  const { getData } = apiAccess();
+  const { getLoggedInUser } = useAuthentication();
+  const [servicesFetched, setServicesFetched] = useState(false);
+  const [usuario, setUsuario] = useState(null);
+  const [siteid, setSiteid] = useState(null);
+
   useEffect(() => {
-    setupSessionExpirationCheck(setShowSessionExpiredAlert);
-    checkSessionExpiration(setShowSessionExpiredAlert);
-  }, []);
-  
-  // Função para renderizar as colunas com base na role do usuário
-  const uu = "tech";
+    const fetchAllservices = async () => {
+      try {
+        const userData = getLoggedInUser();
+        const siteid = userData && userData.siteid;
+        setSiteid(siteid);
+        console.log("Home - siteid do userdata", siteid);
+
+        if (!siteid) {
+          console.error("Erro: siteid do usuário não encontrado.");
+          return;
+        }
+
+        if (!usuario) {
+          setUsuario(userData);
+        }
+
+        const allservicesData = await getData(
+          `api/allservices?siteid=${siteid}`
+        );
+
+        if (
+          allservicesData &&
+          allservicesData[siteid] &&
+          allservicesData[siteid][0] &&
+          Object.keys(allservicesData[siteid][0])
+        ) {
+          const labels = [];
+          const datasets = [];
+
+          Object.keys(allservicesData).forEach((siteId) => {
+            const serviceData = allservicesData[siteId][0];
+
+            if (serviceData && serviceData["Total Requests"]) {
+              const totalRequests =
+                serviceData["Total Requests"].total_requests;
+              const period = serviceData["Total Requests"].period;
+
+              labels.push(period);
+              datasets.push(totalRequests);
+            }
+          });
+
+          console.log("Labels:", labels);
+          console.log("Datasets:", datasets);
+        } else {
+          console.error("Erro: dados de serviços não encontrados.");
+        }
+
+        setServicesFetched(true);
+      } catch (error) {
+        console.error("Erro ao buscar os serviços:", error.message);
+      }
+    };
+
+    if (!servicesFetched) {
+      fetchAllservices();
+    }
+  }, [getData, getLoggedInUser, servicesFetched, usuario]);
+
   const renderCnavItems = () => {
-    switch (uu) {
+    if (!siteid) return null;
+
+    switch (usuario?.role) {
       case "admin":
         return (
           <CNav variant="tabs" role="tablist">
@@ -39,7 +94,6 @@ const Home = () => {
                 href="#!"
                 active={activeKey === 1}
                 onClick={() => setActiveKey(1)}
-                //enabled={uu}
               >
                 Administrator
               </CNavLink>
@@ -58,7 +112,6 @@ const Home = () => {
                 href="#!"
                 active={activeKey === 3}
                 onClick={() => setActiveKey(3)}
-                //    enabled={uu}
               >
                 User
               </CNavLink>
@@ -73,7 +126,6 @@ const Home = () => {
                 href="#!"
                 active={activeKey === 2}
                 onClick={() => setActiveKey(2)}
-                //  enabled={uu}
               >
                 Technical & Support
               </CNavLink>
@@ -83,7 +135,6 @@ const Home = () => {
                 href="#!"
                 active={activeKey === 3}
                 onClick={() => setActiveKey(3)}
-                //    enabled={uu}
               >
                 User
               </CNavLink>
@@ -98,7 +149,6 @@ const Home = () => {
                 href="#!"
                 active={activeKey === 3}
                 onClick={() => setActiveKey(3)}
-                //    enabled={uu}
               >
                 User
               </CNavLink>
@@ -109,27 +159,29 @@ const Home = () => {
         return null;
     }
   };
-  return (
 
+  return (
     <>
-      {/* alerta informando que a sessão expirou */}
+      <NavBar />
+
       {showSessionExpiredAlert && (
-      <CAlert color="danger" className="d-flex align-items-center" >
-        <CIcon color="black" icon={cilBan} className="flex-shrink-0 me-2" width={24} height={24} />
-        <div>Sessão expirada</div>
-        <CButton
-          color="link" onClick={() => setModalVisible(!modalVisible)}>
-            <CIcon icon={cilAccountLogout} title="Logout" />
-          </CButton>  
-      </CAlert>
+        <CAlert color="danger" className="d-flex align-items-center">
+          <CIcon
+            color="black"
+            icon={cilBan}
+            className="flex-shrink-0 me-2"
+            width={24}
+            height={24}
+          />
+          <div>Sessão expirada</div>
+        </CAlert>
       )}
 
-      <NavBar />
-      <br></br>
+      <br />
 
       {renderCnavItems()}
       <div>
-        <CNav variant="tabs" role="tablist">
+        <CNav style={{ width: "1200px" }} variant="tabs" role="tablist">
           <CNavItem>
             <CNavLink
               href="#!"
@@ -167,139 +219,8 @@ const Home = () => {
             aria-labelledby="admin-tab"
             visible={activeKey === 1}
           >
-            <div className="width-800" > 
-              <span >
-                Essa é a área do Administrador, com visão gerecial do sistema.
-              </span>
-              <br></br>
-            </div>
-            <div >
-              <CContainer fluid  >
-                
-              <CChart
-              
-                type="line" 
-                data={{
-                  labels: ["January", "February", "March", "April", "May", "June", "July"],
-                  datasets: [
-                    {
-                      label: "My First dataset",
-                      backgroundColor: "rgba(220, 220, 220, 0.2)",
-                      borderColor: "rgba(220, 220, 220, 1)",
-                      pointBackgroundColor: "rgba(220, 220, 220, 1)",
-                      pointBorderColor: "#fff",
-                      data: [40, 20, 12, 39, 10, 40, 39, 80, 40]
-                    },
-                    {
-                      label: "My Second dataset",
-                      backgroundColor: "rgba(151, 187, 205, 0.2)",
-                      borderColor: "rgba(151, 187, 205, 1)",
-                      pointBackgroundColor: "rgba(151, 187, 205, 1)",
-                      pointBorderColor: "#fff",
-                      data: [50, 12, 28, 29, 7, 25, 12, 70, 60]
-                    },
-                  ],
-                }}
-                options={{
-                  plugins: {
-                    legend: {
-                      labels: {
-                        color: getStyle('--cui-body-color'),
-                      }
-                    }
-                  },
-                  scales: {
-                    x: {
-                      grid: {
-                        color: getStyle('--cui-border-color-translucent'),
-                      },
-                      ticks: {
-                        color: getStyle('--cui-body-color'),
-                      },
-                    },
-                    y: {
-                      grid: {
-                        color: getStyle('--cui-border-color-translucent'),
-                      },
-                      ticks: {
-                        color: getStyle('--cui-body-color'),
-                      },
-                    },
-                  },
-                }}
-              />
-                <CChart
-              
-              type="line" 
-              data={{
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
-                datasets: [
-                  {
-                    label: "My First dataset",
-                    backgroundColor: "rgba(220, 220, 220, 0.2)",
-                    borderColor: "rgba(220, 220, 220, 1)",
-                    pointBackgroundColor: "rgba(220, 220, 220, 1)",
-                    pointBorderColor: "#fff",
-                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40]
-                  },
-                  {
-                    label: "My Second dataset",
-                    backgroundColor: "rgba(151, 187, 205, 0.2)",
-                    borderColor: "rgba(151, 187, 205, 1)",
-                    pointBackgroundColor: "rgba(151, 187, 205, 1)",
-                    pointBorderColor: "#fff",
-                    data: [50, 12, 28, 29, 7, 25, 12, 70, 60]
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: getStyle('--cui-body-color'),
-                    }
-                  }
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      color: getStyle('--cui-border-color-translucent'),
-                    },
-                    ticks: {
-                      color: getStyle('--cui-body-color'),
-                    },
-                  },
-                  y: {
-                    grid: {
-                      color: getStyle('--cui-border-color-translucent'),
-                    },
-                    ticks: {
-                      color: getStyle('--cui-body-color'),
-                    },
-                  },
-                },
-              }}
-            />
-                <CContainer>
-                  <CRow xs={{ cols: 2, gutter: 2 }} lg={{ cols: 5, gutter: 3 }}>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                  </CRow>
-                </CContainer>
-              </CContainer>
-            </div>
+            Essa é a área do Administrador, com visão gerecial do sistema.
+            <div></div>
           </CTabPane>
           <CTabPane
             role="tabpanel"
@@ -307,189 +228,17 @@ const Home = () => {
             visible={activeKey === 2}
           >
             Área de suporte técnico, com visão técnica.
-            <div>
-              <CContainer fluid>
-                <CContainer>
-                  <CRow xs={{ cols: 2, gutter: 2 }} lg={{ cols: 5, gutter: 3 }}>
-                    <CCol>
-                    <CChart
-              
-              type="line" 
-              data={{
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
-                datasets: [
-                  {
-                    label: "My First dataset",
-                    backgroundColor: "rgba(220, 220, 220, 0.2)",
-                    borderColor: "rgba(220, 220, 220, 1)",
-                    pointBackgroundColor: "rgba(220, 220, 220, 1)",
-                    pointBorderColor: "#fff",
-                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40]
-                  },
-                  {
-                    label: "My Second dataset",
-                    backgroundColor: "rgba(151, 187, 205, 0.2)",
-                    borderColor: "rgba(151, 187, 205, 1)",
-                    pointBackgroundColor: "rgba(151, 187, 205, 1)",
-                    pointBorderColor: "#fff",
-                    data: [50, 12, 28, 29, 7, 25, 12, 70, 60]
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: getStyle('--cui-body-color'),
-                    }
-                  }
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      color: getStyle('--cui-border-color-translucent'),
-                    },
-                    ticks: {
-                      color: getStyle('--cui-body-color'),
-                    },
-                  },
-                  y: {
-                    grid: {
-                      color: getStyle('--cui-border-color-translucent'),
-                    },
-                    ticks: {
-                      color: getStyle('--cui-body-color'),
-                    },
-                  },
-                },
-              }}
-            />
-                    </CCol>
-                    <CCol>
-                    <CChart
-              
-              type="line" 
-              data={{
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
-                datasets: [
-                  {
-                    label: "My First dataset",
-                    backgroundColor: "rgba(220, 220, 220, 0.2)",
-                    borderColor: "rgba(220, 220, 220, 1)",
-                    pointBackgroundColor: "rgba(220, 220, 220, 1)",
-                    pointBorderColor: "#fff",
-                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40]
-                  },
-                  {
-                    label: "My Second dataset",
-                    backgroundColor: "rgba(151, 187, 205, 0.2)",
-                    borderColor: "rgba(151, 187, 205, 1)",
-                    pointBackgroundColor: "rgba(151, 187, 205, 1)",
-                    pointBorderColor: "#fff",
-                    data: [50, 12, 28, 29, 7, 25, 12, 70, 60]
-                  },
-                ],
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    labels: {
-                      color: getStyle('--cui-body-color'),
-                    }
-                  }
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      color: getStyle('--cui-border-color-translucent'),
-                    },
-                    ticks: {
-                      color: getStyle('--cui-body-color'),
-                    },
-                  },
-                  y: {
-                    grid: {
-                      color: getStyle('--cui-border-color-translucent'),
-                    },
-                    ticks: {
-                      color: getStyle('--cui-body-color'),
-                    },
-                  },
-                },
-              }}
-            />
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 tech-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 tech-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 tech-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 user-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 user-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                  </CRow>
-                </CContainer>
-              </CContainer>
-            </div>
           </CTabPane>
           <CTabPane
             role="tabpanel"
             aria-labelledby="user-tab"
             visible={activeKey === 3}
           >
-            Área do usuário, com visão de usuário.
+            <br />
+
             <div>
               <CContainer fluid>
-                <CContainer>
-                  <CRow xs={{ cols: 2, gutter: 2 }} lg={{ cols: 5, gutter: 3 }}>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 user-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 tech-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 tech-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 tech-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 user-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 user-col">Row column</div>
-                    </CCol>
-                    <CCol>
-                      <div className="p-3 admin-col">Row column</div>
-                    </CCol>
-                  </CRow>
-                </CContainer>
+                <WidgetCoreui visible={activeKey === 3} />
               </CContainer>
             </div>
           </CTabPane>

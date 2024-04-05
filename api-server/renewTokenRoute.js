@@ -5,7 +5,8 @@ const router = express.Router();
 
 // Rota para renovar o token
 router.post('/', (req, res) => {
-  const { token } = req.body;
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(400).json({ error: 'Token não fornecido' });
@@ -17,7 +18,7 @@ router.post('/', (req, res) => {
 
     // Se o token estiver expirado, gere um novo token
     if (Date.now() > decoded.exp * 1000) {
-      const newToken = jwt.sign({ userId: decoded.userId }, auth.secretKey, { expiresIn: '5m' });
+      const newToken = jwt.sign({ userId: decoded.userId }, auth.secretKey, { expiresIn: '2m' });
       const expiresIn = Math.floor((decoded.exp * 1000 - Date.now()) / 1000); // Tempo restante em segundos
       return res.json({ token: newToken, expiresIn });
     }
@@ -29,7 +30,7 @@ router.post('/', (req, res) => {
     if (error.name === 'TokenExpiredError') {
       // Se o token estiver expirado, gere um novo token com tempo de expiração
       const newToken = jwt.sign({ userId: error.userId }, auth.secretKey, { expiresIn: '50' });
-      return res.json({ token: newToken, expiresIn: 30 });
+      return res.json({ token: newToken, expiresIn: 2* 60 * 1000 });
     }
     console.error('Erro ao renovar o token:', error.message);
     res.status(401).json({ error: 'Token inválido' });

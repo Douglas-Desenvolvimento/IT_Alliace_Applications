@@ -22,30 +22,15 @@ const useAuthentication = () => {
         throw new Error('Falha ao fazer login.');
       }
 
-      const { token, expirationTime } = await loginResponse.json(); // Obtenha o token JWT da resposta
-      //const {expirationTime} = await loginResponse.json();
-      // Armazene o token JWT localmente
+      const { token, expirationTime, user: loggedInUser } = await loginResponse.json(); // Obtenha o token JWT e o nome de usuário da resposta
+      // Armazene o token JWT e o nome de usuário localmente
       localStorage.setItem('token', token);
       localStorage.setItem('expirationTime', expirationTime);
-      console.log('Token JWT:', token, 'Tempo de expiração:', expirationTime);
-
-      // Requisição para obter os dados do usuário autenticado
-      const userResponse = await fetch('http://localhost:3000/user', {
-        headers: {
-          Authorization: `Bearer ${token}` // Envie o token JWT como cabeçalho de autorização
-        }
-      });
-
-      if (!userResponse.ok) {
-        throw new Error('Falha ao obter os dados do usuário.');
-      }
-
-      const userData = await userResponse.json();
-
-      // Armazene os dados do usuário localmente
-      localStorage.setItem('userData', JSON.stringify(userData));
-      const userLocal = JSON.parse(localStorage.getItem('userData'));
-      console.log('Dados do usuário:', userLocal);
+      localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+      const usuario = JSON.parse(localStorage.getItem('loggedInUser'));
+      console.log('Token JWT:', token);
+      console.log('Tempo de expiração:', expirationTime);
+      console.log('Informações do usuário:', usuario);
 
       // Redireciona para a página desejada após o login
       navigate('/home');
@@ -56,10 +41,29 @@ const useAuthentication = () => {
       setError(error.message);
       return { success: false, error: error.message };
     }
+    
   };
 
-  return { login };
-};
+  const logout = () => {
+    // Remova os itens do localStorage relacionados à autenticação
+    localStorage.removeItem('token');
+    localStorage.removeItem('expirationTime');
+    localStorage.removeItem('loggedInUser');
 
+    // Redirecione para a página de login após o logout
+    navigate('/');
+  };
+
+  const getLoggedInUser = () => {
+    try {
+      const usuario = JSON.parse(localStorage.getItem('loggedInUser'));
+      return usuario;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  return { login, logout, error, getLoggedInUser };
+};
 
 export default useAuthentication;

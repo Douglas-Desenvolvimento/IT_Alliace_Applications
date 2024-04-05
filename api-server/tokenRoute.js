@@ -14,12 +14,37 @@ router.post('/', (req, res) => {
     try {
       // Gera o token JWT usando a função importada
       const token = generateToken(username);
-      const expirationTime = Date.now() + 60 * 1000;
-      // Retorna o token gerado como resposta
-      res.json({ token, expirationTime, users: foundUser});
-      console.log('Token gerado com sucesso:', token, foundUser);
+      const expirationTime = Date.now() + 2 * 60 * 1000;
+      console.log('Usuário encontrado:', foundUser);  
+
+      // Faz uma requisição para a rota '/user' e passa o token como parte do corpo da requisição
+      fetch('http://localhost:3000/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user: foundUser, token }) // Passando o usuário e o token no corpo da requisição
+      })
+      .then(response => {
+        // Aqui você pode processar a resposta da rota '/user' se necessário
+        console.log('Resposta da rota /user:', response);
+      })
+      .catch(error => {
+        console.error('Erro ao fazer requisição para /user:', error);
+      });
+
+      // Retorna apenas as informações necessárias do usuário
+      res.json({ token, expirationTime, user: { 
+        username: foundUser.username,
+        email: foundUser.email,
+        telefone: foundUser.telefone,
+        role: foundUser.role,
+        empresa: foundUser.empresa,
+        siteid: foundUser.siteid,
+        token: token // Adiciona o token gerado ao campo 'token' no objeto de resposta
+      }});
+      console.log('Token gerado com sucesso:', token);
       console.log('Tempo de expiração:', expirationTime);
-      
     } catch (error) {
       console.error('Erro ao gerar o token:', error.message);
       res.status(500).json({ error: 'Erro ao gerar o token.' });

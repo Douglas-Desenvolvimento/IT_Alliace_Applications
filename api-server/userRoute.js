@@ -5,30 +5,36 @@ const user = [
     // Dados dos usuários
     {
         "id": "1",
+        "siteid": "5020",
         "username": "Douglas",
         "telefone": 2197045500,
         "email": "douglas@email.com",
         "role": "admin",
         "password": "260914",
-        "empresa": "IT Alliance"
+        "empresa": "IT Alliance",
+        "token": ""
       },
       {
         "id": "2",
+        "siteid": "5040",
         "username": "Paula",
         "telefone": 2197048919,
         "email": "paula@email.com",
         "role": "user",
         "password": "260914",
-        "empresa": "DS Solutions"
+        "empresa": "DS Solutions",
+        "token": ""
       },
       {
         "id": "3",
+        "siteid": "5030",
         "username": "Alice",
         "telefone": 2197048866,
         "email": "alice@email.com",
         "role": "tech",
         "password": "260914",
-        "empresa": "Dev Limites"
+        "empresa": "Dev Limites",
+        "token": ""
       }
 ];
 
