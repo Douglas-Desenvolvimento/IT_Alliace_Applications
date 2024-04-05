@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Função para verificar se o token expirou
+/* // Função para verificar se o token expirou
 function isTokenExpired(expirationTime) {
   return expirationTime < Date.now();
-}
+  console.log('Token expirado:', expirationTime < Date.now());
+} */
 
 // Função para verificar se a sessão expirou
 function isSessionExpired(expirationTime) {
@@ -18,7 +19,7 @@ function hasUserBeenInactive(inactivityTimeout) {
 }
 
 // Função para realizar logout se a sessão expirar por inatividade do usuário
-export function checkSessionExpiration(setShowSessionExpiredAlert) {
+export function checkSessionExpiration(setVisible) {
   const expirationTime = localStorage.getItem('expirationTime');
   const inactivityTimeout = 2 * 60 * 1000; // Tempo de inatividade em milissegundos (2 minutos)
 
@@ -28,7 +29,8 @@ export function checkSessionExpiration(setShowSessionExpiredAlert) {
     if (isSessionExpired(parseInt(expirationTime))) {
       localStorage.removeItem('token');
       localStorage.removeItem('expirationTime');
-      setShowSessionExpiredAlert(true); // Exibir alerta de sessão expirada
+      // Exibir alerta de sessão expirada
+      setVisible(true);
     } else {
       renewToken(localStorage.getItem('token'))
         .then(() => {
@@ -39,14 +41,18 @@ export function checkSessionExpiration(setShowSessionExpiredAlert) {
         })
         .catch(error => {
           console.error('Erro ao renovar o token:', error);
-          setShowSessionExpiredAlert(true); // Exibir alerta de sessão expirada em caso de erro na renovação
+           // Exibir alerta de sessão expirada em caso de erro na renovação
+        setVisible(true);
         });
     }
   } else {
     // Sessão expirada por inatividade do usuário
     localStorage.removeItem('token');
     localStorage.removeItem('expirationTime');
-    setShowSessionExpiredAlert(true); // Exibir alerta de sessão expirada
+   // Exibir alerta de sessão expirada
+    setVisible(true);
+    
+    console.log('Sessão expirada por inatividade do usuário');
   }
 }
 
@@ -79,11 +85,11 @@ function updateUserActivity() {
 }
 
 // Função para configurar a verificação de expiração da sessão em intervalos regulares
-export function setupSessionExpirationCheck(setShowSessionExpiredAlert) {
+export function setupSessionExpirationCheck( setVisible) {
   // Verificar a expiração da sessão periodicamente (por exemplo, a cada minuto)
   setInterval(() => {
-    checkSessionExpiration(setShowSessionExpiredAlert);
-  }, 2 * 60 * 1000); // Verificar a cada 2 minutos
+    checkSessionExpiration( setVisible);
+  }, 1 * 60 * 1000); // Verificar a cada 2 minutos
 
   // Atualizar o horário de atividade do usuário quando houver atividade na página
   document.addEventListener('click', updateUserActivity);
@@ -92,12 +98,13 @@ export function setupSessionExpirationCheck(setShowSessionExpiredAlert) {
 
 // Hook customizado para gerenciar a sessão do usuário
 export function useSession() {
-  const [showSessionExpiredAlert, setShowSessionExpiredAlert] = useState(false);
+  
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setupSessionExpirationCheck(setShowSessionExpiredAlert);
-    checkSessionExpiration(setShowSessionExpiredAlert);
+    setupSessionExpirationCheck( setVisible);
+    checkSessionExpiration( setVisible);
   }, []);
 
-  return { showSessionExpiredAlert };
+  return { visible };
 }

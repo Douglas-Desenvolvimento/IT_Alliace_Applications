@@ -7,84 +7,38 @@ import { CNav, CNavItem, CNavLink } from "@coreui/react";
 import { CTabContent, CTabPane } from "@coreui/react";
 import { CAlert } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilBan, cilAccountLogout } from "@coreui/icons";
+import { cilBan} from "@coreui/icons";
+import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton } from "@coreui/react";
 import NavBar from "../../components/navBar";
 import useAuthentication from "../../hooks/useAuthentication.jsx";
-import apiAccess from "../../hooks/apiAcess.jsx";
+import { useNavigate } from 'react-router-dom';
 import WidgetCoreui from "../../components/widgetCoreui.jsx";
 
 const Home = () => {
   const [activeKey, setActiveKey] = useState();
-  const { showSessionExpiredAlert } = useSession();
-  const { getData } = apiAccess();
+  const { visible} = useSession();
   const { getLoggedInUser } = useAuthentication();
-  const [servicesFetched, setServicesFetched] = useState(false);
   const [usuario, setUsuario] = useState(null);
-  const [siteid, setSiteid] = useState(null);
+  
+ 
 
   useEffect(() => {
     const fetchAllservices = async () => {
       try {
         const userData = getLoggedInUser();
-        const siteid = userData && userData.siteid;
-        setSiteid(siteid);
-        console.log("Home - siteid do userdata", siteid);
-
-        if (!siteid) {
-          console.error("Erro: siteid do usuário não encontrado.");
-          return;
-        }
 
         if (!usuario) {
           setUsuario(userData);
         }
-
-        const allservicesData = await getData(
-          `api/allservices?siteid=${siteid}`
-        );
-
-        if (
-          allservicesData &&
-          allservicesData[siteid] &&
-          allservicesData[siteid][0] &&
-          Object.keys(allservicesData[siteid][0])
-        ) {
-          const labels = [];
-          const datasets = [];
-
-          Object.keys(allservicesData).forEach((siteId) => {
-            const serviceData = allservicesData[siteId][0];
-
-            if (serviceData && serviceData["Total Requests"]) {
-              const totalRequests =
-                serviceData["Total Requests"].total_requests;
-              const period = serviceData["Total Requests"].period;
-
-              labels.push(period);
-              datasets.push(totalRequests);
-            }
-          });
-
-          console.log("Labels:", labels);
-          console.log("Datasets:", datasets);
-        } else {
-          console.error("Erro: dados de serviços não encontrados.");
-        }
-
-        setServicesFetched(true);
       } catch (error) {
         console.error("Erro ao buscar os serviços:", error.message);
       }
     };
 
-    if (!servicesFetched) {
-      fetchAllservices();
-    }
-  }, [getData, getLoggedInUser, servicesFetched, usuario]);
+    fetchAllservices();
+  }, [getLoggedInUser, usuario]);
 
   const renderCnavItems = () => {
-    if (!siteid) return null;
-
     switch (usuario?.role) {
       case "admin":
         return (
@@ -159,23 +113,45 @@ const Home = () => {
         return null;
     }
   };
-
+  const navigate = useNavigate();
+  const { logout } = useAuthentication();
+  const handleLogout = () => {
+    // Chame a função de logout
+    logout();
+    // Após fazer logout, redirecione para a página de login
+    navigate('/');
+  };
+  
   return (
     <>
       <NavBar />
-
-      {showSessionExpiredAlert && (
-        <CAlert color="danger" className="d-flex align-items-center">
-          <CIcon
-            color="black"
-            icon={cilBan}
-            className="flex-shrink-0 me-2"
-            width={24}
-            height={24}
-          />
-          <div>Sessão expirada</div>
-        </CAlert>
-      )}
+    {visible && (
+      <CModal
+      backdrop="static"
+      visible={visible}
+      onClose={() => setVisible(false)}
+      aria-labelledby="StaticBackdropExampleLabel"
+      className="d-flex justify-content-center"
+    >
+      <CModalHeader className="d-flex justify-content-center">
+        <CModalTitle className="d-flex justify-content-center" id="StaticBackdropExampleLabel">Sessão Expirada, efetur um novo login</CModalTitle>
+      </CModalHeader>
+      <CModalBody className="d-flex justify-content-center align-items-center">
+      <CIcon
+          color="black"
+          icon={cilBan}
+          
+          width={84}
+          height={84}
+          
+        />
+      </CModalBody>
+      <CModalFooter className="d-flex justify-content-center">
+        <CButton onClick={handleLogout} color="primary">Login</CButton>
+      </CModalFooter>
+    </CModal>
+    )}
+  
 
       <br />
 

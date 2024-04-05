@@ -67,7 +67,7 @@ const NavBar = () => {
             onClick={() => setModalVisible(!modalVisible)}
             style={{ marginLeft: "10px" }} // Espaçamento entre o avatar e o botão
           >
-            <CIcon icon={cilAccountLogout} title="Logout" />
+            <CIcon icon={cilAccountLogout} size="xl" title="Logout" />
           </CButton>
         </div>
         <CModal
