@@ -21,7 +21,7 @@ function hasUserBeenInactive(inactivityTimeout) {
 // Função para realizar logout se a sessão expirar por inatividade do usuário
 export function checkSessionExpiration(setVisible) {
   const expirationTime = localStorage.getItem('expirationTime');
-  const inactivityTimeout = 2 * 60 * 1000; // Tempo de inatividade em milissegundos (2 minutos)
+  const inactivityTimeout = 10 * 60 * 1000; // Tempo de inatividade em milissegundos (2 minutos)
 
   const isSessionActive = !hasUserBeenInactive(inactivityTimeout);
 
@@ -35,7 +35,7 @@ export function checkSessionExpiration(setVisible) {
       renewToken(localStorage.getItem('token'))
         .then(() => {
           // Token renovado com sucesso, atualize o tempo de expiração
-          const newExpirationTime = Date.now() + (2 * 60 * 1000); // Novo tempo de expiração (2 minutos)
+          const newExpirationTime = Date.now() + (10 * 60 * 1000); // Novo tempo de expiração (2 minutos)
           localStorage.setItem('expirationTime', newExpirationTime.toString());
           console.log('Token renovado com sucesso. Novo tempo de expiração:', newExpirationTime);
         })
@@ -89,7 +89,7 @@ export function setupSessionExpirationCheck( setVisible) {
   // Verificar a expiração da sessão periodicamente (por exemplo, a cada minuto)
   setInterval(() => {
     checkSessionExpiration( setVisible);
-  }, 1 * 60 * 1000); // Verificar a cada 2 minutos
+  }, 5 * 60 * 1000); // Verificar a cada 2 minutos
 
   // Atualizar o horário de atividade do usuário quando houver atividade na página
   document.addEventListener('click', updateUserActivity);

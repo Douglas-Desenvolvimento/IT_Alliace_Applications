@@ -10,6 +10,7 @@ import Page404 from "./pages/page404/Page404";
 import Page500 from "./pages/page500/Page500";
 import Profile from "./pages/profile/Profile";
 import Logout from "./pages/logout/Logout";
+import Manutencao from "./pages/manut/Manutencao";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/500" element={<Page500 />} />
         <Route path="*" element={<Page404 />} />
         <Route path="/" element={<Login />} />
+        <Route path="/manutencao" element={<Manutencao/>} />
         
         
         

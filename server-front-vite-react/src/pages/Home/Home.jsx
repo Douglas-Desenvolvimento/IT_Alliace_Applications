@@ -5,7 +5,6 @@ import "../../../node_modules/@coreui/coreui/";
 import { CContainer } from "@coreui/react";
 import { CNav, CNavItem, CNavLink } from "@coreui/react";
 import { CTabContent, CTabPane } from "@coreui/react";
-import { CAlert } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilBan} from "@coreui/icons";
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton } from "@coreui/react";
@@ -13,6 +12,9 @@ import NavBar from "../../components/navBar";
 import useAuthentication from "../../hooks/useAuthentication.jsx";
 import { useNavigate } from 'react-router-dom';
 import WidgetCoreui from "../../components/widgetCoreui.jsx";
+import DashboardNice from "../../components/dashboardNice.jsx";
+import NiceDash from "../../components/NiceDash.jsx";
+import Tables from "../../components/tables.jsx";
 
 const Home = () => {
   const [activeKey, setActiveKey] = useState();
@@ -196,7 +198,13 @@ const Home = () => {
             visible={activeKey === 1}
           >
             Essa é a área do Administrador, com visão gerecial do sistema.
-            <div></div>
+            <br />
+
+            <div>
+              <CContainer fluid>
+                {/* <NiceDash /> */}
+              </CContainer>
+            </div>
           </CTabPane>
           <CTabPane
             role="tabpanel"
@@ -214,7 +222,9 @@ const Home = () => {
 
             <div>
               <CContainer fluid>
-                <WidgetCoreui visible={activeKey === 3} />
+                <WidgetCoreui />
+                <Tables />
+               <DashboardNice /> 
               </CContainer>
             </div>
           </CTabPane>

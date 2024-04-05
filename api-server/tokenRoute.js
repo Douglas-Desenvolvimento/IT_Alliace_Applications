@@ -14,7 +14,7 @@ router.post('/', (req, res) => {
     try {
       // Gera o token JWT usando a função importada
       const token = generateToken(username);
-      const expirationTime = Date.now() + 2 * 60 * 1000;
+      const expirationTime = Date.now() + 50 * 60 * 1000;
       console.log('Usuário encontrado:', foundUser);  
 
       // Faz uma requisição para a rota '/user' e passa o token como parte do corpo da requisição
