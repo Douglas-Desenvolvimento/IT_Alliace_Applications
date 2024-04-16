@@ -9,7 +9,7 @@ const allservices = {
         "period": "Dez/2023"
       },
       "TrusScore": {
-        "total_requests": 150,
+        "total_requests": 550,
         "period": "Dez/2023"
       },
       "PreFill": {
@@ -31,7 +31,7 @@ const allservices = {
         "period": "Jan/2024"
       },
       "TrusScore": {
-        "total_requests": 150,
+        "total_requests": 420,
         "period": "Jan/2024"
       },
       "PreFill": {
@@ -49,7 +49,7 @@ const allservices = {
     },
     {
       "Total Requests": {
-        "total_requests": 200,
+        "total_requests": 260,
         "period": "Feb/2024"
       },
       "TrusScore": {
@@ -75,7 +75,7 @@ const allservices = {
         "period": "Mar/2024"
       },
       "TrusScore": {
-        "total_requests": 43,
+        "total_requests": 343,
         "period": "Mar/2024"
       },
       "PreFill": {
@@ -99,7 +99,7 @@ const allservices = {
         "period": "Dez/2023"
       },
       "TrusScore": {
-        "total_requests": 150,
+        "total_requests": 750,
         "period": "Dez/2023"
       },
       "PreFill": {
@@ -121,7 +121,7 @@ const allservices = {
         "period": "Jan/2024"
       },
       "TrusScore": {
-        "total_requests": 150,
+        "total_requests": 350,
         "period": "Jan/2024"
       },
       "PreFill": {
@@ -143,7 +143,7 @@ const allservices = {
         "period": "Feb/2024"
       },
       "TrusScore": {
-        "total_requests": 250,
+        "total_requests": 190,
         "period": "Feb/2024"
       },
       "PreFill": {
@@ -165,7 +165,7 @@ const allservices = {
         "period": "Mar/2024"
       },
       "TrusScore": {
-        "total_requests": 98,
+        "total_requests": 298,
         "period": "Mar/2024"
       },
       "PreFill": {
@@ -189,7 +189,7 @@ const allservices = {
         "period": "Dez/2023"
       },
       "TrusScore": {
-        "total_requests": 150,
+        "total_requests": 950,
         "period": "Dez/2023"
       },
       "PreFill": {
@@ -211,7 +211,7 @@ const allservices = {
         "period": "Jan/2024"
       },
       "TrusScore": {
-        "total_requests": 150,
+        "total_requests": 820,
         "period": "Jan/2024"
       },
       "PreFill": {
@@ -233,7 +233,7 @@ const allservices = {
         "period": "Feb/2024"
       },
       "TrusScore": {
-        "total_requests": 250,
+        "total_requests": 290,
         "period": "Feb/2024"
       },
       "PreFill": {
@@ -255,7 +255,7 @@ const allservices = {
         "period": "Mar/2024"
       },
       "TrusScore": {
-        "total_requests": 112,
+        "total_requests": 612,
         "period": "Mar/2024"
       },
       "PreFill": {

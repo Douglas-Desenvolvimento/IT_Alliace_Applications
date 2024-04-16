@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ApexCharts from 'apexcharts';
 import useAuthentication from "../hooks/useAuthentication";
 import apiAccess from "../hooks/apiAcess.jsx";
+import Chart from 'chart.js/auto';
 
 const DashboardNice = () => {
   const [chartData, setChartData] = useState(null);

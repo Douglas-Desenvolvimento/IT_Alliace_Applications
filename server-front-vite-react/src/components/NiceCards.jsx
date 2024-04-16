@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
 import useAuthentication from "../hooks/useAuthentication";
 import apiAccess from "../hooks/apiAcess.jsx";
+import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons';
+import 'boxicons/css/boxicons.min.css';
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
+import 'remixicon/fonts/remixicon.css';
+import 'simple-datatables/dist/style.css';
+
 import CIcon from "@coreui/icons-react";
 import * as icon from "@coreui/icons";
 import { ApexOptions } from "apexcharts";
-import '../App.css';
+import { CRow, CCol, CWidgetStatsA } from "@coreui/react";
+
 
 const NiceCards = () => {
   const [chartData, setChartData] = useState(null);
@@ -85,11 +94,12 @@ const NiceCards = () => {
   };
 
   return (
-    <div className="row">
+    <CRow>
+
       {/* TrushScore */}
-      <div className="col-xxl-4 col-md-6">
+      <CCol className="col-xxl-4 col-md-6">
         <TrushScore data={chartData} />
-      </div>
+      </CCol>
 
       {/* Autentication */}
       <div className="col-xxl-4 col-md-6">
@@ -106,7 +116,7 @@ const NiceCards = () => {
       <div className="col-xxl-4 col-xl-12">
         <Verify data={chartData} />
       </div>
-    </div>
+    </CRow>
 
 
   );
@@ -123,9 +133,10 @@ const TrushScore = ({ data }) => {
   const increasePercentage = data.datasets[0].data[1];
   const services = data.datasets[0].label;
   const period = data.labels
-  console.log(services,increasePercentage,salesToday, period);
+ // console.log(services,increasePercentage,salesToday, period);
 
   return (
+    
     <div className="card info-card sales-card">
       <div className="filter">
         

@@ -3,12 +3,29 @@ import NiceCards from '../../components/NiceCards'
 import NiceDash from '../../components/NiceDash'
 import DashboardNice from '../../components/dashboardNice'
 import { CContainer } from '@coreui/react'
-import ApexCharts from 'apexcharts';
+import NewWidget from '../../components/newWidget'
+import Acqu from '../../acquisitions'
+import useApiData from '../../components/useApiData.jsx'
+import GraficoNovo from '../../components/graficoNovo.jsx'
+import NewTable from '../../components/newTable.jsx'
 
 const Manutencao = () => {
   return (
-    <div>
+    <div className=" m-0 bg-white text-black">
       <h1>Tela para manutenção de codigos</h1>
+
+{/* <Acqu /> */}
+      <div>
+        {/* <NovoAp /> */}
+        {/* <GraficoNovo /> */}
+        <NewWidget />
+        <NewTable />
+{/* <h2>New Widget</h2>
+    <CContainer fluid>
+        <NewWidget />
+    </CContainer>
+  </div>
+
 <div>
 <h2>NiceCard</h2>
     <CContainer fluid>
@@ -25,7 +42,7 @@ const Manutencao = () => {
         <h2>DashboardNice</h2>
     <CContainer fluid>
         <DashboardNice />
-    </CContainer>
+    </CContainer> */}
 
     </div>
     

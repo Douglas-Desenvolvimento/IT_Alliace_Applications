@@ -11,10 +11,8 @@ import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton } 
 import NavBar from "../../components/navBar";
 import useAuthentication from "../../hooks/useAuthentication.jsx";
 import { useNavigate } from 'react-router-dom';
-import WidgetCoreui from "../../components/widgetCoreui.jsx";
-import DashboardNice from "../../components/dashboardNice.jsx";
-import NiceDash from "../../components/NiceDash.jsx";
-import Tables from "../../components/tables.jsx";
+import NewTable from '../../components/newTable.jsx'
+import NewWidget from '../../components/newWidget'
 
 const Home = () => {
   const [activeKey, setActiveKey] = useState();
@@ -222,9 +220,8 @@ const Home = () => {
 
             <div>
               <CContainer fluid>
-                <WidgetCoreui />
-                <Tables />
-               <DashboardNice /> 
+                <NewWidget />
+                <NewTable />
               </CContainer>
             </div>
           </CTabPane>

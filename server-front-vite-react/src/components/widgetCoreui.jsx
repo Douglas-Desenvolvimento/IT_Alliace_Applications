@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import Chart from 'chart.js/auto';
 import apiAccess from "../hooks/apiAcess.jsx";
 import useAuthentication from "../hooks/useAuthentication.jsx";
 import { CRow, CCol, CWidgetStatsA } from "@coreui/react";
@@ -157,8 +157,7 @@ const WidgetCoreui = () => {
                         },
                       },
                       y: {
-                        min: 0,
-                        max: 500,
+                       
                         display: false,
                         grid: {
                           display: false,
@@ -254,8 +253,7 @@ const WidgetCoreui = () => {
                         },
                       },
                       y: {
-                        min: 0,
-                        max: 500,
+                        
                         display: false,
                         grid: {
                           display: false,
@@ -350,8 +348,7 @@ const WidgetCoreui = () => {
                         },
                       },
                       y: {
-                        min: 0,
-                        max: 500,
+                        
                         display: false,
                         grid: {
                           display: false,
@@ -438,8 +435,7 @@ const WidgetCoreui = () => {
                         },
                       },
                       y: {
-                        min: 0,
-                        max: 500,
+                       
                         display: false,
                         grid: {
                           display: false,
